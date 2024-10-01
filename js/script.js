@@ -5,11 +5,12 @@ const headerInput = document.querySelector('.header-input');
 const todoList = document.querySelector('.todo-list');
 const todoCompleted = document.querySelector('.todo-completed');
 
-const toDoData = localStorage.getItem('localToDoList')
-  ? JSON.parse(localStorage.getItem('localToDoList'))
-  : [];
+const setData = (key, value) =>
+  localStorage.setItem(key, JSON.stringify(value));
+const getData = (key) => JSON.parse(localStorage.getItem(key)) || [];
 
-console.log(toDoData);
+const toDoData = getData('localToDoList');
+
 const render = function () {
   todoList.innerHTML = '';
   todoCompleted.innerHTML = '';
@@ -34,14 +35,14 @@ const render = function () {
     }
     li.querySelector('.todo-complete').addEventListener('click', function () {
       item.completed = !item.completed;
-      localStorage.setItem('localToDoList', JSON.stringify(toDoData));
+      setData('localToDoList', toDoData);
       render();
     });
 
     li.querySelector('.todo-remove').addEventListener('click', function () {
       const itemIndex = toDoData.indexOf(item);
       toDoData.splice(itemIndex, 1);
-      localStorage.setItem('localToDoList', JSON.stringify(toDoData));
+      setData('localToDoList', toDoData);
       render();
     });
   });
@@ -51,16 +52,14 @@ todoControl.addEventListener('submit', function (event) {
   event.preventDefault();
 
   const newToDo = {
-    text: headerInput.value,
+    text: headerInput.value.trim(),
     completed: false,
   };
-  if (headerInput.value === '') {
-  } else {
+  if (headerInput.value !== '') {
     toDoData.push(newToDo);
+    render();
   }
-
   headerInput.value = '';
-  localStorage.setItem('localToDoList', JSON.stringify(toDoData));
-  render();
+  setData('localToDoList', toDoData);
 });
 render();
